@@ -21,13 +21,9 @@ aliases:
     #
     # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
     redeliver: "!ARG=$1; f() { \
-      echo $ARG; \
       OWNERREPO=$(echo $ARG | cut -d '/' -f 4-5); \
-      echo \"OWNERREPO: $OWNERREPO\"; \
       PRNUM=$(echo $ARG | cut -d '/' -f 7);
-      echo \"PRNUM: $PRNUM\"; \
       WEBHOOKID=$(gh api /repos/$OWNERREPO/hooks --jq '.[0] | .id');
-      echo \"WEBHOOKID: $WEBHOOKID\"; \
       DELIVERYID=$(gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
         | select(.action == \"closed\")
         | select(.event == \"pull_request\")
