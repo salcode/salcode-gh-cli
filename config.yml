@@ -22,6 +22,8 @@ aliases:
     # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
     redeliver: "!ARG=$1; f() { \
       echo $ARG; \
+      OWNERREPO=$(echo $ARG | cut -d '/' -f 4-5); \
+      echo \"OWNERREPO: $OWNERREPO\"; \
       echo \'stub redeliver\'; \
     }; f"
 
