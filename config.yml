@@ -9,7 +9,6 @@ pager:
 # Aliases allow you to create nicknames for gh commands
 aliases:
     co: pr checkout
-
     # gh redeliver <PR URL>
     #
     # Find the first webhook defined for a repo,
@@ -21,7 +20,8 @@ aliases:
     # @param $1 A GitHub PR URL (e.g. https://github.com/salcode/my-example-repo/pull/23)
     #
     # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
-    redeliver: "!f() { \
+    redeliver: "!ARG=$1; f() { \
+      echo $ARG; \
       echo \'stub redeliver\'; \
     }; f"
 
