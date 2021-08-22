@@ -31,7 +31,8 @@ aliases:
       gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
         | select(.action == \"closed\")
         | select(.event == \"pull_request\")
-        | .id'; \
+        | .id' \
+      | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/%; \
       echo \'stub redeliver\'; \
     }; f"
 
