@@ -33,7 +33,9 @@ aliases:
         | select(.event == \"pull_request\")
         | .id' \
       | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/% \
-      | jq --slurp \"[.[]]\"; \
+      | jq --slurp \"[.[] \
+        | select(.request.payload.number == $PRNUM)
+      ]\"; \
       echo \'stub redeliver\'; \
     }; f"
 
