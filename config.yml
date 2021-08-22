@@ -28,7 +28,9 @@ aliases:
       echo \"PRNUM: $PRNUM\"; \
       WEBHOOKID=$(gh api /repos/$OWNERREPO/hooks --jq '.[0] | .id');
       echo \"WEBHOOKID: $WEBHOOKID\"; \
-      gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.'; \
+      gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
+        | select(.action == \"closed\")
+        | select(.event == \"pull_request\")'; \
       echo \'stub redeliver\'; \
     }; f"
 
