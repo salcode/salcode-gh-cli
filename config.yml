@@ -35,6 +35,7 @@ aliases:
       | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/% \
       | jq --slurp \"[.[] \
         | select(.request.payload.number == $PRNUM)
+        | .id
       ]\"; \
       echo \'stub redeliver\'; \
     }; f"
