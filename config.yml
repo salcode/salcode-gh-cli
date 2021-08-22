@@ -24,6 +24,8 @@ aliases:
       echo $ARG; \
       OWNERREPO=$(echo $ARG | cut -d '/' -f 4-5); \
       echo \"OWNERREPO: $OWNERREPO\"; \
+      PRNUM=$(echo $ARG | cut -d '/' -f 7);
+      echo \"PRNUM: $PRNUM\"; \
       echo \'stub redeliver\'; \
     }; f"
 
