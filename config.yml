@@ -9,5 +9,38 @@ pager:
 # Aliases allow you to create nicknames for gh commands
 aliases:
     co: pr checkout
+    # gh redeliver <PR URL>
+    #
+    # Find the first webhook defined for a repo,
+    # locate the most recent delivery sent that
+    # "closed" a "pull_request"
+    # with a matching pull request ID
+    # and redeliver that webhook delivery.
+    #
+    # @param $1 A GitHub PR URL (e.g. https://github.com/salcode/my-example-repo/pull/23)
+    #
+    # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
+    redeliver: "!ARG=$1; f() { \
+      OWNERREPO=$(echo $ARG | cut -d '/' -f 4-5); \
+      PRNUM=$(echo $ARG | cut -d '/' -f 7);
+      WEBHOOKID=$(gh api /repos/$OWNERREPO/hooks --jq '.[0] | .id');
+      DELIVERYID=$(gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
+        | select(.action == \"closed\")
+        | select(.event == \"pull_request\")
+        | .id' \
+      | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/% \
+      | jq --slurp \"[.[] \
+        | select(.request.payload.number == $PRNUM)
+        | .id
+      ] | .[0] \"); \
+      echo \"DELIVERYID: $DELIVERYID\"; \
+      gh api --method POST /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/$DELIVERYID/attempts;
+      echo; \
+      echo \"Redelivered most recent delivery ($DELIVERYID) for webhook ($WEBHOOKID) on repo ($OWNERREPO) where:\"; \
+      echo \"- action: 'closed'\"; \
+      echo \"- event: 'pull_request'\"; \
+      echo \"- PR ID: $PRNUM\"; \
+    }; f"
+
 # The path to a unix socket through which send HTTP connections. If blank, HTTP traffic will be handled by net/http.DefaultTransport.
 http_unix_socket:
