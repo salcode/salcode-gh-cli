@@ -30,7 +30,8 @@ aliases:
       echo \"WEBHOOKID: $WEBHOOKID\"; \
       gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
         | select(.action == \"closed\")
-        | select(.event == \"pull_request\")'; \
+        | select(.event == \"pull_request\")
+        | .id'; \
       echo \'stub redeliver\'; \
     }; f"
 
