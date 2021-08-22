@@ -9,5 +9,21 @@ pager:
 # Aliases allow you to create nicknames for gh commands
 aliases:
     co: pr checkout
+
+    # gh redeliver <PR URL>
+    #
+    # Find the first webhook defined for a repo,
+    # locate the most recent delivery sent that
+    # "closed" a "pull_request"
+    # with a matching pull request ID
+    # and redeliver that webhook delivery.
+    #
+    # @param $1 A GitHub PR URL (e.g. https://github.com/salcode/my-example-repo/pull/23)
+    #
+    # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
+    redeliver: "!f() { \
+      echo \'stub redeliver\'; \
+    }; f"
+
 # The path to a unix socket through which send HTTP connections. If blank, HTTP traffic will be handled by net/http.DefaultTransport.
 http_unix_socket:
