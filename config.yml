@@ -32,7 +32,8 @@ aliases:
         | select(.action == \"closed\")
         | select(.event == \"pull_request\")
         | .id' \
-      | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/%; \
+      | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/% \
+      | jq --slurp \"[.[]]\"; \
       echo \'stub redeliver\'; \
     }; f"
 
