@@ -4,15 +4,16 @@ My configuration for GitHub CLI and notes.
 
 ## Aliases
 
-### `gh redeliver <PR URL>`
+### `gh redeliver <webhook payload URL>`
 
-Based on the PR URL (e.g. `https://github.com/salcode/my-example-repo/pull/23`) find the most recent webhook delivery (for the first webhook defined for the repo (`salcode/my-example-repo`)) where:
+Based on the webhook payload URL (e.g. `https://example.com/dev/hook`) resend the most recent webhook delivery to that URL that meets the criteria:
 
 - the `action` has a value of `closed`
 - the `event` has a value of `pull_request`
-- the Pull Request ID (`.request.payload.number`) matches the Pull Request Number in the URL
 
-e.g. `gh redeliver https://github.com/salcode/my-example-repo/pull/23`
+e.g. `gh redeliver https://example.com/dev/hook`
+
+**Note**: Your current branch has no impact on which webhook delivery is resent.
 
 ## Setup
 

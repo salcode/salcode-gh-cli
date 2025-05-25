@@ -9,37 +9,23 @@ pager:
 # Aliases allow you to create nicknames for gh commands
 aliases:
     co: pr checkout
-    # gh redeliver <PR URL>
+    # gh redeliver <webhook payload URL>
     #
-    # Find the first webhook defined for a repo,
-    # locate the most recent delivery sent that
+    # Locate the most recent delivery sent
+    # to the given webhook payload URL that
     # "closed" a "pull_request"
-    # with a matching pull request ID
     # and redeliver that webhook delivery.
     #
-    # @param $1 A GitHub PR URL (e.g. https://github.com/salcode/my-example-repo/pull/23)
+    # @param $1 The webhook Payload URL set in GitHub (e.g. https://example.com/dev/hook)
     #
-    # e.g. gh redeliver https://github.com/salcode/my-example-repo/pull/23
+    # e.g. gh redeliver https://example.com/dev/hook
     redeliver: "!ARG=$1; f() { \
-      OWNERREPO=$(echo $ARG | cut -d '/' -f 4-5); \
-      PRNUM=$(echo $ARG | cut -d '/' -f 7);
-      WEBHOOKID=$(gh api /repos/$OWNERREPO/hooks --jq '.[0] | .id');
-      DELIVERYID=$(gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries --jq '.[]
-        | select(.action == \"closed\")
-        | select(.event == \"pull_request\")
-        | .id' \
-      | xargs -I % -n1 gh api /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/% \
-      | jq --slurp \"[.[] \
-        | select(.request.payload.number == $PRNUM)
-        | .id
-      ] | .[0] \"); \
-      echo \"DELIVERYID: $DELIVERYID\"; \
-      gh api --method POST /repos/$OWNERREPO/hooks/$WEBHOOKID/deliveries/$DELIVERYID/attempts;
-      echo; \
-      echo \"Redelivered most recent delivery ($DELIVERYID) for webhook ($WEBHOOKID) on repo ($OWNERREPO) where:\"; \
-      echo \"- action: 'closed'\"; \
-      echo \"- event: 'pull_request'\"; \
-      echo \"- PR ID: $PRNUM\"; \
+      echo \"Redelivering webhook for PR $ARG\"; \
+      WEBHOOK_ID=$(gh api /repos/{owner}/{repo}/hooks | jq --arg webhook_url \"$ARG\" '.[] | select(.config.url==$webhook_url) | .id'); \
+      DELIVERY_ID=$(gh api /repos/{owner}/{repo}/hooks/$WEBHOOK_ID/deliveries --jq 'map(select(.event==\"pull_request\")) | map(select(.action==\"closed\")) | first | .id'); \
+      echo \"$DELIVERY_ID\"; \
+      gh api \"/repos/{owner}/{repo}/hooks/$WEBHOOK_ID/deliveries/$DELIVERY_ID\" --jq '\"Redelivering webhook delivery for PR \\(.request.payload.number) merged into \\(.request.payload.pull_request.base.ref) \\(.request.payload.action)\"'; \
+      gh api --method POST /repos/{owner}/{repo}/hooks/$WEBHOOK_ID/deliveries/$DELIVERY_ID/attempts;
     }; f"
 
 # The path to a unix socket through which send HTTP connections. If blank, HTTP traffic will be handled by net/http.DefaultTransport.
