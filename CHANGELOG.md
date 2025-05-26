@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Add version `1` to `config.yml`
+- Remove extraneous backtick in setup instructions in `README.md` ([#4](https://github.com/salcode/salcode-gh-cli/issues/4))
 
 ## [1.0.0] - 2021-08-22
 - Initial setup using default GitHub CLI `config.yml` values.
